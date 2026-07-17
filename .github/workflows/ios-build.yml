@@ -1,4 +1,4 @@
-name: iOS Build
+Name: iOS Build
 
 on:
   push:
@@ -30,4 +30,21 @@ jobs:
         run: flutter pub get
 
       - name: Build iOS App
-        run: flutter build ios --no-codesign
+        run: flutter build ios --release --no-codesign
+
+      - name: Build IPA (Unsigned)
+        run: |
+          mkdir -p build/ios/ipa
+          cd build/ios/iphoneos
+          mkdir Payload
+          ln -s ../Runner.app Payload/Runner.app
+          zip -r ../ipa/Runner.ipa Payload
+        # Nota: Flutter no genera un .ipa directamente con `--no-codesign`.
+        # Este paso rápido empaqueta el archivo .app en un .ipa sin firmar.
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build-ipa
+          path: build/ios/ipa/Runner.ipa
+          retention-days: 5
