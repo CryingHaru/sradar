@@ -1,5 +1,3 @@
-Name: iOS Build
-
 on:
   push:
     branches:
